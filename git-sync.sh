@@ -11,6 +11,7 @@ while true; do
     if [ "$LOCAL" != "$REMOTE" ]; then
         echo "$(date): Change detected, pulling..."
         git pull
+        sudo systemctl restart irrigator
     fi
     sleep $INTERVAL
 done
