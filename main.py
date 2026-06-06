@@ -36,6 +36,8 @@ def get_weather_data():
     }
 
     response = requests.get(url, params=params)
+    print(f"Status code: {response.status_code}")
+    print(f"Response: {response.text}")
     response.raise_for_status()
     data = response.json()
 
