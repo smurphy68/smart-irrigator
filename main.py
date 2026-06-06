@@ -2,6 +2,8 @@ import os
 from dotenv import load_dotenv
 import requests
 from datetime import datetime, timedelta
+import schedule
+import time
 
 load_dotenv()
 DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
@@ -10,6 +12,10 @@ LONGITUDE = os.getenv("LONGITUDE")
 
 BED_AREA = 1.8 * 0.76
 ABSORPTION_FACTOR = 0.8  # assumed high because it's a raised bed with angled sides
+TICK_INTERVAL_MINS = 10
+
+DISPENSED_L = 0
+DAILY_L = 0
 
 
 def notify(message):
@@ -36,8 +42,6 @@ def get_weather_data():
     }
 
     response = requests.get(url, params=params)
-    print(f"Status code: {response.status_code}")
-    print(f"Response: {response.text}")
     response.raise_for_status()
     data = response.json()
 
@@ -56,8 +60,26 @@ def get_weather_data():
     return yesterday_data, today_data
 
 
-def calculate_dispense(etc0_mm, rainfall_mm_yday, forecast_rain_probability):
-    demand_l = etc0_mm * BED_AREA
+def reset_daily():
+    global DISPENSED_L
+    DISPENSED_L = 0
+
+    global DAILY_L
+    DAILY_L = 0
+
+
+def morning_fetch():
+    yesterday, today = get_weather_data()
+    calculate_dispense(
+        today["et0"],
+        yesterday["precipitation_mm"],
+        today["precipitation_probability"]
+    )
+    notify(f"Scheduled to dispense {DAILY_L}L today")
+
+
+def calculate_dispense(et0_mm, rainfall_mm_yday, forecast_rain_probability):
+    demand_l = et0_mm * BED_AREA
 
     # rainfall credit for yesterday's rain
     effective_rainfall = rainfall_mm_yday * BED_AREA * ABSORPTION_FACTOR
@@ -71,24 +93,40 @@ def calculate_dispense(etc0_mm, rainfall_mm_yday, forecast_rain_probability):
     estimated_dispense = demand_l - effective_rainfall - credit_l
     dispense = max(0, estimated_dispense)
 
+    global DAILY_L
+    DAILY_L = round(dispense, 2)
+
     return round(dispense, 2)
 
 
 def schedule_dispense():
+    global DISPENSED_L
+
+    hour = datetime.now().hour
+    if hour < 6 or (11 <= hour < 14) or hour >= 18:
+        return
+
+    if DISPENSED_L >= DAILY_L:
+        return
+
+    tick_amount = DAILY_L / (9 * 60 / TICK_INTERVAL_MINS)
+    DISPENSED_L += tick_amount
+    notify(f"Dispensing {tick_amount:.3f}L - total: {DISPENSED_L:.2f}/{DAILY_L}L")
+    pump_it()
+
+
+def pump_it():  # louder
     return
 
 
-notify("Service started")
-
-
 if __name__ == "__main__":
-    print("running")
-    yesterday_result, today_result = get_weather_data()
+    notify("Service started")
 
-    litres = calculate_dispense(
-        today_result["et0"],
-        yesterday_result["precipitation_mm"],
-        today_result["precipitation_probability"]
-    )
+    schedule.every().day.at("05:59").do(reset_daily)
+    schedule.every().day.at("06:00").do(morning_fetch)
 
-    notify(f"Scheduled to dispense {litres}L today")
+    schedule.every(TICK_INTERVAL_MINS).minutes.do(schedule_dispense)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
