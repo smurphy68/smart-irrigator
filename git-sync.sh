@@ -10,7 +10,8 @@ while true; do
     REMOTE=$(git rev-parse origin/$BRANCH)
     if [ "$LOCAL" != "$REMOTE" ]; then
         echo "$(date): Change detected, pulling..."
-        git pull
+        git fetch origin
+        git reset --hard origin/$BRANCH
         sudo systemctl restart irrigator
     fi
     sleep $INTERVAL
