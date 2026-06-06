@@ -15,5 +15,5 @@ def notify(message):
 notify("Service started")
 
 while True:
-    print("Hello, World!")
+    notify("I promis I am running")
     time.sleep(5)
