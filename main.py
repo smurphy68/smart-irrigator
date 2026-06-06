@@ -23,8 +23,8 @@ def get_weather_data():
 
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
-        "latitude": LATITUDE,
-        "longitude": LONGITUDE,
+        "latitude": float(LATITUDE),
+        "longitude": float(LONGITUDE),
         "daily": [
             "precipitation_sum",
             "et0_fao_evapotranspiration",
