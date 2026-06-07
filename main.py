@@ -4,18 +4,25 @@ import requests
 from datetime import datetime, timedelta
 import schedule
 import time
+from gpiozero import OutputDevice
 
 load_dotenv()
 DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 LATITUDE = os.getenv("LATITUDE")
 LONGITUDE = os.getenv("LONGITUDE")
+OBSCURE_URL = os.getenv("OBSCURE_URL")
 
 BED_AREA = 1.8 * 0.76
 ABSORPTION_FACTOR = 0.8  # assumed high because it's a raised bed with angled sides
-TICK_INTERVAL_MINS = 10
+TICK_INTERVAL_MINS = 2
 
 DISPENSED_L = 0
 DAILY_L = 0
+
+PUMP_RATE_LS = 0.1  # litres per second - to be configured
+PUMP_PIN = 4
+
+pump = OutputDevice(PUMP_PIN, active_high=True)  # invert this when connected to the pump as relays are active
 
 
 def notify(message):
@@ -60,6 +67,40 @@ def get_weather_data():
     return yesterday_data, today_data
 
 
+def _post(payload: dict):
+    if not OBSCURE_URL:
+        return
+    try:
+        requests.post(OBSCURE_URL, json=payload)
+    except requests.exceptions.RequestException as e:
+        notify(f"Dashboard post failed: {e}")
+
+
+def post_daily_schedule(et0: float, rainfall: float, dispensed: float, forecast_prob: float):
+    _post({
+        "event": "daily_schedule",
+        "et0": et0,
+        "rainfall": rainfall,
+        "dispensed": dispensed,
+        "forecast_prob": forecast_prob
+    })
+
+
+def post_dispense_tick(tick_amount: float, dispensed_total: float):
+    _post({
+        "event": "dispense_tick",
+        "tick_amount": tick_amount,
+        "dispensed_total": dispensed_total
+    })
+
+
+def post_moisture_reading(moisture: float):
+    _post({
+        "event": "moisture_reading",
+        "moisture": moisture
+    })
+
+
 def reset_daily():
     global DISPENSED_L
     DISPENSED_L = 0
@@ -75,7 +116,14 @@ def morning_fetch():
         yesterday["precipitation_mm"],
         today["precipitation_probability"]
     )
+
     notify(f"Scheduled to dispense {DAILY_L}L today")
+    post_daily_schedule(
+        et0=today["et0"],
+        rainfall=yesterday["precipitation_mm"],
+        dispensed=DAILY_L,
+        forecast_prob=today["precipitation_probability"]
+    )
 
 
 def calculate_dispense(et0_mm, rainfall_mm_yday, forecast_rain_probability):
@@ -109,22 +157,29 @@ def schedule_dispense():
     if DISPENSED_L >= DAILY_L:
         return
 
-    tick_amount = DAILY_L / (9 * 60 / TICK_INTERVAL_MINS)
-    DISPENSED_L += tick_amount
-    notify(f"Dispensing {tick_amount:.3f}L - total: {DISPENSED_L:.2f}/{DAILY_L}L")
-    pump_it()
+    dispense_l = DAILY_L / (9 * 60 / TICK_INTERVAL_MINS)
+    DISPENSED_L += dispense_l
+    notify(f"Dispensing {dispense_l:.3f}L - total: {DISPENSED_L:.2f}/{DAILY_L}L")
+    pump_it(dispense_l)
+    post_dispense_tick(dispense_l, DISPENSED_L)
 
 
-def pump_it():  # louder
-    return
+def pump_it(dispense_l: float):
+    duration = round(dispense_l / PUMP_RATE_LS)
+    duration = min(duration, 60)  # safety cap
+    pump.on()
+    time.sleep(duration)
+    pump.off()
 
 
 if __name__ == "__main__":
     notify("Service started")
 
+    reset_daily()
+    morning_fetch()
+
     schedule.every().day.at("05:59").do(reset_daily)
     schedule.every().day.at("06:00").do(morning_fetch)
-
     schedule.every(TICK_INTERVAL_MINS).minutes.do(schedule_dispense)
 
     while True:
