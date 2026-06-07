@@ -75,7 +75,10 @@ def ingest():
 @app.get("/api/config")
 def api_config():
     return jsonify({
-        "tick_interval_mins": os.getenv("TICK_INTERVAL_MINS", "60")
+        "tick_interval_mins": os.getenv("TICK_INTERVAL_MINS", "10"),
+        "bed_area": os.getenv("BED_AREA", "1.368"),
+        "absorption_factor": os.getenv("ABSORPTION_FACTOR", "0.8"),
+        "pump_rate_ls": os.getenv("PUMP_RATE_LS", "0.1"),
     })
 
 

@@ -48,8 +48,8 @@ async function load() {
     const ticks   = await tickRes.json();
     const config  = await configRes.json();
 
-    const tickInterval = config.tick_interval_mins;
-    const pumpRate     = config.pump_rate_ls;
+    const tickInterval = parseInt(config.tick_interval_mins);
+    const pumpRate     = parseFloat(config.pump_rate_ls);
 
     const today          = history.length ? history[history.length - 1] : null;
     const dispensedSoFar = ticks.reduce((s, t) => s + (t.tick_amount || 0), 0);
