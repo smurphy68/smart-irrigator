@@ -22,7 +22,7 @@ DAILY_L = 0
 PUMP_RATE_LS = 0.1  # litres per second - to be configured
 PUMP_PIN = 4
 
-pump = OutputDevice(PUMP_PIN, active_high=False)  # invert this when connected to the pump as relays are active
+pump = OutputDevice(PUMP_PIN, active_high=True)  # invert this when connected to the pump as relays are active
 
 
 def notify(message):
