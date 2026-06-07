@@ -117,7 +117,8 @@ def morning_fetch():
         today["precipitation_probability"]
     )
 
-    notify(f"Scheduled to dispense {DAILY_L}L today")
+    notify_schedule()
+
     post_daily_schedule(
         et0=today["et0"],
         rainfall=yesterday["precipitation_mm"],
@@ -170,6 +171,26 @@ def pump_it(dispense_l: float):
     pump.on()
     time.sleep(duration)
     pump.off()
+
+
+def notify_schedule():
+    morning_ticks = int((5 * 60) / TICK_INTERVAL_MINS)
+    afternoon_ticks = int((4 * 60) / TICK_INTERVAL_MINS)
+    total_ticks = morning_ticks + afternoon_ticks
+    tick_amount = round(DAILY_L / total_ticks, 3) if total_ticks > 0 else 0
+    tick_duration = max(round(tick_amount / PUMP_RATE_LS), 3)
+
+    message = (
+        f"**Watering schedule for {datetime.now().strftime('%A %d %B')}**\n"
+        f"Total to dispense: {DAILY_L}L\n\n"
+        f"**Morning** 06:00–11:00\n"
+        f"{morning_ticks} ticks × {tick_amount}L every {TICK_INTERVAL_MINS} mins ({tick_duration}s pump)\n\n"
+        f"**Pause** 11:00–14:00\n"
+        f"Peak evaporation — pump off\n\n"
+        f"**Afternoon** 14:00–18:00\n"
+        f"{afternoon_ticks} ticks × {tick_amount}L every {TICK_INTERVAL_MINS} mins ({tick_duration}s pump)"
+    )
+    notify(message)
 
 
 if __name__ == "__main__":

@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0262bb79-3d75-4d70-967f-5dc855eff0df" name="Changes" comment="added / to obscure_url">
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dashboard/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/dashboard/requirements.txt" afterDir="false" />
+    <list default="true" id="0262bb79-3d75-4d70-967f-5dc855eff0df" name="Changes" comment="connect pi to railway">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,7 +119,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780844694169</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="connect pi to railway">
+      <option name="closed" value="true" />
+      <created>1780845133618</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1780845133618</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -130,6 +138,7 @@
     <MESSAGE value="added docker for prod att. 2" />
     <MESSAGE value="added docker for prod att. 3" />
     <MESSAGE value="added / to obscure_url" />
-    <option name="LAST_COMMIT_MESSAGE" value="added / to obscure_url" />
+    <MESSAGE value="connect pi to railway" />
+    <option name="LAST_COMMIT_MESSAGE" value="connect pi to railway" />
   </component>
 </project>
