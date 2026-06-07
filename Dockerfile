@@ -9,4 +9,4 @@ COPY dashboard/ .
 
 EXPOSE 8080
 
-CMD ["python", "app.py"]
+CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:8080", "--workers", "2"]
