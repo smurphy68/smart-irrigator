@@ -14,7 +14,7 @@ OBSCURE_URL = os.getenv("OBSCURE_URL")
 
 BED_AREA = 1.8 * 0.76
 ABSORPTION_FACTOR = 0.8  # assumed high because it's a raised bed with angled sides
-TICK_INTERVAL_MINS = 2
+TICK_INTERVAL_MINS = 60
 
 DISPENSED_L = 0
 DAILY_L = 0
@@ -22,7 +22,7 @@ DAILY_L = 0
 PUMP_RATE_LS = 0.1  # litres per second - to be configured
 PUMP_PIN = 4
 
-pump = OutputDevice(PUMP_PIN, active_high=True)  # invert this when connected to the pump as relays are active
+pump = OutputDevice(PUMP_PIN, active_high=False)  # invert this when connected to the pump as relays are active
 
 
 def notify(message):
@@ -165,9 +165,8 @@ def schedule_dispense():
 
 
 def pump_it(dispense_l: float):
-#    duration = round(dispense_l / PUMP_RATE_LS)
-#    duration = min(duration, 60)  # safety cap
-    duration = 3
+    duration = round(dispense_l / PUMP_RATE_LS)
+    duration = min(duration, 60)  # safety cap
     pump.on()
     time.sleep(duration)
     pump.off()
