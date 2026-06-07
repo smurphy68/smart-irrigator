@@ -165,8 +165,9 @@ def schedule_dispense():
 
 
 def pump_it(dispense_l: float):
-    duration = round(dispense_l / PUMP_RATE_LS)
-    duration = min(duration, 60)  # safety cap
+#    duration = round(dispense_l / PUMP_RATE_LS)
+#    duration = min(duration, 60)  # safety cap
+    duration = 3
     pump.on()
     time.sleep(duration)
     pump.off()
