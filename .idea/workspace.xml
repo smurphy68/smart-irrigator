@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0262bb79-3d75-4d70-967f-5dc855eff0df" name="Changes" comment="added docker for prod">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="0262bb79-3d75-4d70-967f-5dc855eff0df" name="Changes" comment="added docker for prod att. 2">
       <change beforePath="$PROJECT_DIR$/dashboard/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/dashboard/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -95,7 +94,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780843959195</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="added docker for prod att. 2">
+      <option name="closed" value="true" />
+      <created>1780844301618</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1780844301618</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -103,6 +110,7 @@
     <MESSAGE value="added pump" />
     <MESSAGE value="testing led" />
     <MESSAGE value="added docker for prod" />
-    <option name="LAST_COMMIT_MESSAGE" value="added docker for prod" />
+    <MESSAGE value="added docker for prod att. 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="added docker for prod att. 2" />
   </component>
 </project>
