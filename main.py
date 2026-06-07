@@ -14,7 +14,7 @@ OBSCURE_URL = os.getenv("OBSCURE_URL")
 
 BED_AREA = 1.8 * 0.76
 ABSORPTION_FACTOR = 0.8  # assumed high because it's a raised bed with angled sides
-TICK_INTERVAL_MINS = 60
+TICK_INTERVAL_MINS = int(os.getenv("TICK_INTERVAL_MINS", "60"))
 
 DISPENSED_L = 0
 DAILY_L = 0

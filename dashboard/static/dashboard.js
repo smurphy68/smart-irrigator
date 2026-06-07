@@ -27,36 +27,44 @@ function updateStatusCard(today) {
   document.getElementById('status-forecast').textContent = (today.forecast_prob || 0).toFixed(0) + '%';
 }
 
-function updateSchedule(today) {
-  const tickAmount = ((today.dispensed || 0) / 54).toFixed(3);
-  document.getElementById('sched-fetch').textContent     = 'ET\u2080 ' + (today.et0 || 0).toFixed(2) + 'mm \u2192 ' + (today.dispensed || 0).toFixed(2) + 'L scheduled';
-  document.getElementById('sched-morning').textContent   = 'Every 10 min \u00b7 ' + tickAmount + 'L per tick';
-  document.getElementById('sched-afternoon').textContent = 'Every 10 min \u00b7 ' + tickAmount + 'L per tick';
+function updateSchedule(today, tickInterval, pumpRate) {
+    const totalTicks = (9 * 60) / tickInterval;
+    const tickAmount = ((today.dispensed || 0) / totalTicks).toFixed(3);
+    const tickDuration = Math.max(Math.round(parseFloat(tickAmount) / pumpRate), 3);
+
+    document.getElementById('sched-fetch').textContent     = `ET₀ ${(today.et0 || 0).toFixed(2)}mm → ${(today.dispensed || 0).toFixed(2)}L scheduled`;
+    document.getElementById('sched-morning').textContent   = `Every ${tickInterval} min · ${tickAmount}L per tick (${tickDuration}s)`;
+    document.getElementById('sched-afternoon').textContent = `Every ${tickInterval} min · ${tickAmount}L per tick (${tickDuration}s)`;
 }
 
 async function load() {
   try {
-    const [histRes, tickRes] = await Promise.all([
-      fetch('/api/history'),
-      fetch('/api/ticks')
+    const [histRes, tickRes, configRes] = await Promise.all([
+        fetch('/api/history'),
+        fetch('/api/ticks'),
+        fetch('/api/config')
     ]);
     const history = await histRes.json();
     const ticks   = await tickRes.json();
+    const config  = await configRes.json();
+
+    const tickInterval = config.tick_interval_mins;
+    const pumpRate     = config.pump_rate_ls;
 
     const today          = history.length ? history[history.length - 1] : null;
     const dispensedSoFar = ticks.reduce((s, t) => s + (t.tick_amount || 0), 0);
 
     if (today) {
-      updateMetrics(today, dispensedSoFar);
-      updateStatusCard(today);
-      updateSchedule(today);
+        updateMetrics(today, dispensedSoFar);
+        updateStatusCard(today);
+        updateSchedule(today, tickInterval, pumpRate);
     }
 
     if (ticks.length)   renderDispenseChart(ticks);
     if (history.length) renderHistoryCharts(history);
 
-    document.getElementById('status-dot').className        = 'online';
-    document.getElementById('last-updated').textContent    = 'Updated ' + new Date().toLocaleTimeString();
+    document.getElementById('status-dot').className     = 'online';
+    document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
 
   } catch (e) {
     document.getElementById('last-updated').textContent = 'Could not reach API';

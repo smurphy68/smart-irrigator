@@ -7,6 +7,10 @@ load_dotenv()
 
 REDIS_URL: str = os.getenv("REDIS_URL", "")
 OBSCURE_ENDPOINT: str = os.getenv("OBSCURE_ENDPOINT", "")
+BED_AREA = float(os.getenv("BED_AREA", "1.368"))
+ABSORPTION_FACTOR = float(os.getenv("ABSORPTION_FACTOR", "0.8"))
+TICK_INTERVAL_MINS = int(os.getenv("TICK_INTERVAL_MINS", "10"))
+PUMP_RATE_LS = float(os.getenv("PUMP_RATE_LS", "0.1"))
 
 app = Flask(__name__)
 
@@ -66,6 +70,13 @@ def ingest():
         r.ltrim("irrigator:history", -30, -1)
 
     return {"ok": True}
+
+
+@app.get("/api/config")
+def api_config():
+    return jsonify({
+        "tick_interval_mins": os.getenv("TICK_INTERVAL_MINS", "60")
+    })
 
 
 if __name__ == "__main__":
