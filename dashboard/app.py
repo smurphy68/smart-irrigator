@@ -50,7 +50,7 @@ def api_ticks():
     return jsonify(get_today_ticks())
 
 
-@app.post("/" + OBSCURE_ENDPOINT)
+@app.post(OBSCURE_ENDPOINT)
 def ingest():
     r = get_redis()
     data = request.json
