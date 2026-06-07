@@ -50,7 +50,7 @@ def api_ticks():
     return jsonify(get_today_ticks())
 
 
-@app.post("/" + OBSCURE_ENDPOINT)
+@app.post(OBSCURE_ENDPOINT)
 def ingest():
     r = get_redis()
     data = request.json
@@ -63,7 +63,7 @@ def ingest():
     else:
         data["date"] = datetime.now().isoformat()
         r.rpush("irrigator:history", json.dumps(data))
-        r.ltrim("irrigator:history", -900, -1)
+        r.ltrim("irrigator:history", -30, -1)
 
     return {"ok": True}
 

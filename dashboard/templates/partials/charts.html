@@ -1,32 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart irrigator</title>
-  <link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css">
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-
-<header>
-  <div class="brand">
-    <i class="ti ti-droplet" aria-hidden="true"></i>
-    Smart irrigator
+<div>
+  <p class="section-label">Litres dispensed today</p>
+  <div class="card">
+    <div class="card-body">
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#378ADD;"></span>Cumulative dispensed (L)</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#E6F1FB; border:1px solid #B5D4F4;"></span>Midday pause</span>
+      </div>
+      <div style="position:relative; width:100%; height:200px;">
+        <canvas id="dispenseChart" role="img" aria-label="Step chart of cumulative litres dispensed throughout today">Cumulative litres dispensed today.</canvas>
+      </div>
+    </div>
   </div>
-  <div class="meta">
-    <span id="status-dot"></span>
-    <span id="last-updated">Loading...</span>
+</div>
+
+<div>
+  <p class="section-label">Soil moisture vs ET₀ — last 30 days</p>
+  <div class="card">
+    <div class="card-body">
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-line" style="background:#1D9E75;"></span>Soil moisture %</span>
+        <span class="legend-item"><span class="legend-dashed" style="border-color:#D85A30;"></span>ET₀ mm</span>
+        <span class="legend-item"><span style="font-size:13px; margin-right:2px;">▲</span>Rain day</span>
+      </div>
+      <div style="position:relative; width:100%; height:260px;">
+        <canvas id="moistureChart" role="img" aria-label="Dual axis line chart showing soil moisture percentage and ET0 over 30 days">Soil moisture and ET0 over 30 days.</canvas>
+      </div>
+    </div>
   </div>
-</header>
+</div>
 
-<main>
-  {% block content %}{% endblock %}
-</main>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="/static/charts.js"></script>
-<script src="/static/dashboard.js"></script>
-
-</body>
-</html>
+<div>
+  <p class="section-label">Last 30 days — dispensed vs rainfall</p>
+  <div class="card">
+    <div class="card-body">
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#378ADD;"></span>Dispensed (L)</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#5DCAA5;"></span>Rainfall (mm)</span>
+      </div>
+      <div style="position:relative; width:100%; height:220px;">
+        <canvas id="historyChart" role="img" aria-label="Bar chart showing daily dispensed litres and rainfall over 30 days">Daily dispensed litres and rainfall over 30 days.</canvas>
+      </div>
+    </div>
+  </div>
+</div>
