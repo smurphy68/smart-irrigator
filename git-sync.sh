@@ -12,6 +12,7 @@ while true; do
         echo "$(date): Change detected, pulling..."
         git fetch origin
         git reset --hard origin/$BRANCH
+        chmod +x "$REPO/git-sync.sh"
         sudo systemctl restart irrigator
     fi
     sleep $INTERVAL
