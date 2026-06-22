@@ -23,10 +23,24 @@ def get_history():
     r = get_redis()
     cutoff = datetime.now() - timedelta(days=30)
     entries = r.lrange("irrigator:history", 0, -1)
-    return [
-        json.loads(e) for e in entries
-        if datetime.fromisoformat(json.loads(e)["date"]) >= cutoff
-    ]
+
+    result = []
+
+    for i in range(len(entries)):
+        entry = json.loads(entries[i])
+
+        if datetime.fromisoformat(entry["date"]) < cutoff:
+            continue
+
+        if i == 0:
+            entry["yday_rain"] = None
+        else:
+            prev_entry = json.loads(entries[i - 1])
+            entry["yday_rain"] = prev_entry["rainfall"]
+
+        result.append(entry)
+
+    return result
 
 
 def get_today_ticks():

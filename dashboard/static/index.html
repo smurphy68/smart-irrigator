@@ -342,7 +342,6 @@
         <div class="chart-legend">
           <span class="legend-item"><span class="legend-line" style="background:#1D9E75;"></span>Soil moisture %</span>
           <span class="legend-item"><span class="legend-dashed" style="border-color:#D85A30;"></span>ET₀ mm</span>
-          <span class="legend-item"><span style="font-size:13px; margin-right:2px;">▲</span>Rain day</span>
         </div>
         <div style="position:relative; width:100%; height:260px;">
           <canvas id="moistureChart" role="img" aria-label="Dual axis line chart showing soil moisture percentage and ET0 over 30 days">Soil moisture and ET0 over 30 days.</canvas>
@@ -450,7 +449,7 @@
     const rainfall  = history.map(d => parseFloat((d.rainfall  || 0).toFixed(2)));
     const moisture  = history.map(d => d.moisture != null ? parseFloat(d.moisture.toFixed(1)) : null);
     const et0       = history.map(d => parseFloat((d.et0 || 0).toFixed(2)));
-    const rainDay   = history.map(d => (d.rainfall || 0) > 2);
+    const rainDay   = history.map(d => (d.yday_rain || 0) > 0);
 
     if (moistureChartInst) moistureChartInst.destroy();
     moistureChartInst = new Chart(document.getElementById('moistureChart'), {
