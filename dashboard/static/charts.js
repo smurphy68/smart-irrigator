@@ -1,6 +1,65 @@
 let dispenseChartInst = null;
 let moistureChartInst = null;
 let historyChartInst = null;
+
+function renderDispenseChart(ticks) {
+  const labels = ticks.map(t => {
+    const d = new Date(t.date);
+    return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+  });
+  const cumulative = ticks.map(t => parseFloat((t.dispensed_total || 0).toFixed(2)));
+  const pauseData = ticks.map(t => {
+    const h = new Date(t.date).getHours();
+    return (h >= 11 && h < 14) ? 5 : null;
+  });
+
+  if (dispenseChartInst) dispenseChartInst.destroy();
+  dispenseChartInst = new Chart(document.getElementById('dispenseChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Cumulative (L)',
+          data: cumulative,
+          borderColor: '#378ADD',
+          backgroundColor: 'rgba(55,138,221,0.08)',
+          fill: true,
+          stepped: true,
+          pointRadius: 0,
+          borderWidth: 2
+        },
+        {
+          label: 'Pause',
+          data: pauseData,
+          backgroundColor: 'rgba(181,212,244,0.25)',
+          borderColor: 'transparent',
+          fill: true,
+          pointRadius: 0,
+          borderWidth: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.datasetIndex === 0 ? 'Dispensed: ' + ctx.parsed.y.toFixed(2) + 'L' : null,
+            filter: item => item.datasetIndex === 0
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { font: { size: 11 }, color: '#888780', maxTicksLimit: 9, maxRotation: 0 }, grid: { color: 'rgba(136,135,128,0.1)' } },
+        y: { min: 0, ticks: { font: { size: 11 }, color: '#888780', callback: v => v + 'L' }, grid: { color: 'rgba(136,135,128,0.1)' } }
+      }
+    }
+  });
+}
+
 function renderHistoryCharts(history) {
   const labels = history.map(d => {
     const dt = new Date(d.date);
